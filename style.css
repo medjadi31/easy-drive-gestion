@@ -233,3 +233,16 @@ button.danger{background:#7b3030;color:#fff;border:1px solid #a64b4b}button.seco
  header>button{max-width:48%;white-space:normal}
  .location-label{font-size:9px;letter-spacing:1px}
 }
+
+
+/* Supabase cloud login */
+.cloud-login{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:#090909f2;backdrop-filter:blur(8px)}
+.cloud-login[hidden]{display:none!important}
+.cloud-login-card{width:min(100%,420px);display:flex;flex-direction:column;gap:12px;padding:28px;border:1px solid #6f592c;border-radius:18px;background:#171717;color:#f5f5f5;box-shadow:0 20px 70px #0009}
+.cloud-login-card img{width:170px;height:72px;object-fit:contain;object-position:left center}
+.cloud-login-card h1{font-size:22px;margin:4px 0;color:#e1c27e}
+.cloud-login-card p,.cloud-login-card small{color:#aaa;line-height:1.5}
+.cloud-login-card label{font-size:13px;color:#d6c08f}
+.cloud-login-card input{width:100%;padding:13px;border:1px solid #444;border-radius:9px;background:#101010;color:#fff;font:inherit}
+.cloud-login-card button{padding:13px;border:0;border-radius:9px;background:#c6a15b;color:#111;font-weight:800;font:inherit;cursor:pointer}
+.cloud-login-card button:disabled{opacity:.6}

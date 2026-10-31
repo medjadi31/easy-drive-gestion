@@ -1,8 +1,12 @@
 const $=s=>document.querySelector(s),iso=d=>new Date(d).toISOString().slice(0,10),money=n=>(+n||0).toLocaleString('fr-FR')+' DA',esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const SUPABASE_URL='https://aplxwowroaajuytxdahi.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_14NcAkmAHgfGx42i-kuZBw_shLoGKJl';
+const cloudClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+let cloudReady=false, cloudChannel=null;
 let db;try{db=JSON.parse(localStorage.edm)}catch{}db=db||{vehicles:[['Kia KX1',2026,8000],['Livan X3 Pro',2026,7000],['Geely Coolray',2026,11500],['Fiat 500X',2024,9000]].map((x,i)=>({id:i+1,name:x[0],year:x[1],rate:x[2],status:'Disponible'})),reservations:[],clients:[],expenses:[],maintenance:[],cats:['⛽ Essence / Gasoil','🛢️ Vidange','🔩 Pièces de rechange','🧰 Entretien et réparation','🚘 Tôlerie','🏢 Fournitures du bureau','🧾 Frais administratifs','📦 Autres dépenses']};
 // Migration douce des anciens dossiers : heure par défaut à 10:00.
 db.reservations.forEach(r=>{r.startTime ||= '10:00';r.endTime ||= '10:00'});let page='dashboard',planningOffset=0,lastAvailability=null;
-function save(){localStorage.edm=JSON.stringify(db)}
+function save(){localStorage.edm=JSON.stringify(db);if(cloudReady){cloudClient.from('app_state').upsert({id:1,data:db,updated_at:new Date().toISOString()}).then(({error})=>{if(error)console.error('Cloud save failed:',error)})}}
 const names={dashboard:'Tableau de bord',planning:'Planning',reservations:'Réservations',disponibilites:'Disponibilités',vehicles:'Véhicules',clients:'Clients',finances:'Finances',expenses:'Dépenses',maintenance:'Maintenance'};
 const pageIcons={dashboard:'🚘',planning:'📅',reservations:'📋',disponibilites:'🔎',vehicles:'🚗',clients:'👥',finances:'💰',expenses:'🧾',maintenance:'🔧'};
 Object.keys(names).forEach(k=>{let b=document.createElement('button');b.textContent=names[k];b.onclick=()=>go(k);b.dataset.p=k;$('#nav').append(b)});
@@ -70,3 +74,36 @@ function reserveSpecificCar(car){if(!lastAvailability)return;reservationForm({..
 function expenseForm(){form('Nouvelle dépense',f('Date','date','date',iso(new Date()))+sel('Catégorie','cat',db.cats)+sel('Véhicule','car',['—',...db.vehicles.map(v=>v.name)])+f('Montant DA','amount','number')+f('Fournisseur','vendor')+sel('Mode de paiement','pay',['Espèces','Virement','PayPal','Carte','Autre'])+f('Note','note'),x=>{if(+x.amount<=0)return false;db.expenses.push({...x,id:Date.now(),car:x.car==='—'?'':x.car})})}
 function categoryForm(){form('Nouvelle catégorie',f('Nom','cat'),x=>{if(x.cat&&!db.cats.includes(x.cat))db.cats.push(x.cat)})}function clientForm(){form('Nouveau client',f('Nom','name')+f('Téléphone','phone')+f('E-mail','email'),x=>db.clients.push(x))}function maintenanceForm(){form('Intervention maintenance',f('Date','date','date',iso(new Date()))+sel('Véhicule','car',db.vehicles.map(v=>v.name))+f('Intervention','job')+f('Kilométrage','km','number')+f('Coût DA','cost','number')+sel('Statut','status',['À prévoir','En cours','Terminée']),x=>db.maintenance.push(x))}function del(k,id){if(confirm('Confirmer la suppression ?')){db[k]=db[k].filter(x=>x.id!==id);save();render()}}
 window.go=go;window.vehicleForm=vehicleForm;window.reservationForm=reservationForm;window.editReservation=editReservation;window.changeVehicle=changeVehicle;window.deleteReservation=deleteReservation;window.reservationFromAvailability=reservationFromAvailability;window.reserveSpecificCar=reserveSpecificCar;window.expenseForm=expenseForm;window.categoryForm=categoryForm;window.clientForm=clientForm;window.maintenanceForm=maintenanceForm;window.del=del;window.checkAvailability=checkAvailability;window.filterPlanning=filterPlanning;window.movePlanning=movePlanning;render();go('dashboard');
+
+const loginBox=document.getElementById('cloudLogin');
+const loginForm=document.getElementById('cloudLoginForm');
+const loginMessage=document.getElementById('cloudLoginMessage');
+function showLogin(message='Connectez-vous pour accéder aux données Easy Drive.'){loginBox.hidden=false;loginMessage.textContent=message}
+function hideLogin(){loginBox.hidden=true}
+function hasUsefulData(x){return ['vehicles','reservations','clients','expenses','maintenance'].some(k=>Array.isArray(x?.[k])&&x[k].length>0)}
+async function loadCloud(){
+ const localCopy=JSON.parse(localStorage.getItem('edm')||'null')||db;
+ const {data:row,error}=await cloudClient.from('app_state').select('data').eq('id',1).maybeSingle();
+ if(error){showLogin('Connexion réussie, mais lecture cloud impossible : '+error.message);return}
+ if(row&&hasUsefulData(row.data)){db=row.data;localStorage.edm=JSON.stringify(db)}
+ else if(hasUsefulData(localCopy)){
+   const {error:upErr}=await cloudClient.from('app_state').upsert({id:1,data:localCopy,updated_at:new Date().toISOString()});
+   if(upErr){showLogin('Impossible de transférer les données locales : '+upErr.message);return}
+   db=localCopy;
+ } else if(row?.data){db=row.data;localStorage.edm=JSON.stringify(db)}
+ cloudReady=true;hideLogin();render();go(page);
+ if(cloudChannel)cloudClient.removeChannel(cloudChannel);
+ cloudChannel=cloudClient.channel('easy-drive-live-sync').on('postgres_changes',{event:'UPDATE',schema:'public',table:'app_state',filter:'id=eq.1'},payload=>{
+   if(payload.new?.data){db=payload.new.data;localStorage.edm=JSON.stringify(db);render();go(page)}
+ }).subscribe();
+}
+loginForm.addEventListener('submit',async e=>{
+ e.preventDefault();const email=document.getElementById('cloudEmail').value.trim(),password=document.getElementById('cloudPassword').value;
+ const submit=loginForm.querySelector('button[type=submit]');submit.disabled=true;submit.textContent='Connexion…';loginMessage.textContent='';
+ const {error}=await cloudClient.auth.signInWithPassword({email,password});
+ submit.disabled=false;submit.textContent='Se connecter';
+ if(error){loginMessage.textContent='Erreur : '+error.message;return}
+ await loadCloud();
+});
+cloudClient.auth.getSession().then(({data})=>{if(data.session)loadCloud();else showLogin()});
+
