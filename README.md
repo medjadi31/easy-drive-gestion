@@ -9,8 +9,11 @@ Décompresser le dossier et publier les fichiers `index.html`, `style.css` et `a
 - Calcul de location par périodes de 24 heures : toute fraction de période entamée est facturée comme une journée (minimum 1 jour).
 - Saisie de l'heure de remise et de retour du véhicule.
 - Contrôle des chevauchements à la minute près : une nouvelle location peut commencer à l'heure exacte du retour précédent.
-- Planning avec nom du client et horaires de réservation dans les jours concernés.
+- Planning annuel : liste chronologique de toutes les réservations sur les 12 prochains mois par défaut, avec filtre libre par dates, nom du client et heures.
 - Recherche des véhicules disponibles sur une période choisie.
 
 ## Données
 Les données sont enregistrées dans le `localStorage` du navigateur de l'appareil. Cette version ne synchronise pas encore les données entre plusieurs téléphones ou utilisateurs et ne constitue pas une sauvegarde cloud.
+
+
+Fonctions de gestion des réservations : modifier les informations, changer de véhicule avec contrôle de disponibilité, supprimer après confirmation. Depuis Disponibilités, le bouton « Réserver » ouvre directement une nouvelle réservation avec le véhicule et la période préremplis.
