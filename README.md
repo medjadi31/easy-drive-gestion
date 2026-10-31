@@ -1,26 +1,16 @@
-# EASY DRIVE MANAGER — ORAN · ALGÉRIE
+# EASY DRIVE MANAGER
+Application web de gestion de flotte et de location pour Easy Drive.
 
-Application web de gestion de flotte en français, thème noir et or.
+## Installation / publication
+Décompresser le dossier et publier les fichiers `index.html`, `style.css` et `app.js` à la racine du dépôt GitHub Pages.
 
-## Modules inclus
-- Tableau de bord
-- Planning sur 15 jours
-- Réservations et calcul automatique du nombre de jours / montant
-- Blocage des chevauchements de réservation par véhicule
-- Gestion des véhicules
-- Gestion des clients
-- Finances : recettes, dépenses et solde
-- Dépenses avec catégories prédéfinies et personnalisables
-- Maintenance
+## Fonctions
+- Gestion des véhicules, clients, réservations, dépenses et maintenance.
+- Calcul de location par périodes de 24 heures : toute fraction de période entamée est facturée comme une journée (minimum 1 jour).
+- Saisie de l'heure de remise et de retour du véhicule.
+- Contrôle des chevauchements à la minute près : une nouvelle location peut commencer à l'heure exacte du retour précédent.
+- Planning avec nom du client et horaires de réservation dans les jours concernés.
+- Recherche des véhicules disponibles sur une période choisie.
 
-## Catégories de dépenses
-⛽ Essence / Gasoil · 🛢️ Vidange · 🔩 Pièces de rechange · 🧰 Entretien et réparation · 🚘 Tôlerie · 🏢 Fournitures du bureau · 🧾 Frais administratifs · 📦 Autres dépenses
-
-## Lancer l'application
-Décompressez le ZIP puis ouvrez `index.html` dans un navigateur récent.
-
-## GitHub Pages
-Envoyez les fichiers à la racine du dépôt GitHub, puis activez GitHub Pages dans Settings > Pages en sélectionnant la branche principale et `/ (root)`.
-
-## Important
-Version prototype locale : les données sont stockées dans le navigateur via `localStorage`. Elles ne sont pas encore synchronisées entre plusieurs téléphones. Firebase, authentification et sauvegarde cloud ne sont pas configurés.
+## Données
+Les données sont enregistrées dans le `localStorage` du navigateur de l'appareil. Cette version ne synchronise pas encore les données entre plusieurs téléphones ou utilisateurs et ne constitue pas une sauvegarde cloud.
