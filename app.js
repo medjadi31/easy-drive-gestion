@@ -3,9 +3,11 @@ let db;try{db=JSON.parse(localStorage.edm)}catch{}db=db||{vehicles:[['Kia KX1',2
 // Migration douce des anciens dossiers : heure par défaut à 10:00.
 db.reservations.forEach(r=>{r.startTime ||= '10:00';r.endTime ||= '10:00'});let page='dashboard',planningOffset=0,lastAvailability=null;
 function save(){localStorage.edm=JSON.stringify(db)}
-const names={dashboard:'Tableau de bord',planning:'Planning',reservations:'Réservations',disponibilites:'Disponibilités',vehicles:'Véhicules',clients:'Clients',finances:'Finances',expenses:'Dépenses',maintenance:'Maintenance'};\nconst pageIcons={dashboard:'🚘',planning:'📅',reservations:'📋',disponibilites:'🔎',vehicles:'🚗',clients:'👥',finances:'💰',expenses:'🧾',maintenance:'🔧'};
+const names={dashboard:'Tableau de bord',planning:'Planning',reservations:'Réservations',disponibilites:'Disponibilités',vehicles:'Véhicules',clients:'Clients',finances:'Finances',expenses:'Dépenses',maintenance:'Maintenance'};
+const pageIcons={dashboard:'🚘',planning:'📅',reservations:'📋',disponibilites:'🔎',vehicles:'🚗',clients:'👥',finances:'💰',expenses:'🧾',maintenance:'🔧'};
 Object.keys(names).forEach(k=>{let b=document.createElement('button');b.textContent=names[k];b.onclick=()=>go(k);b.dataset.p=k;$('#nav').append(b)});
-$('#headerReservation').hidden=true;\nfunction go(p){page=p;$('#title').textContent=names[p];$('#pageIcon').textContent=pageIcons[p]||'🚘';$('#headerReservation').hidden=p!=='dashboard';document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.p===p));render()}
+$('#headerReservation').hidden=true;
+function go(p){page=p;$('#title').textContent=names[p];$('#pageIcon').textContent=pageIcons[p]||'🚘';$('#headerReservation').hidden=p!=='dashboard';document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.p===p));render()}
 function table(h,rows){return `<div class="wrap panel"><table><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr>${rows||`<tr><td colspan="${h.length}" class="muted">Aucune donnée</td></tr>`}</table></div>`}
 function card(t,v){return `<div class="card"><small>${t}</small><strong>${v}</strong></div>`}
 function dateTime(date,time){return new Date(`${date}T${time||'10:00'}:00`).getTime()}
