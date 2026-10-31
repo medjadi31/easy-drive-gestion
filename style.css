@@ -183,3 +183,31 @@ button.danger{background:#7b3030;color:#fff;border:1px solid #a64b4b}button.seco
  .planning-timeline .planning-booking-card b{font-size:10px}
  .planning-timeline .planning-booking-card small{font-size:8px}
 }
+
+/* V9: Easy Drive company logo in desktop and mobile headers */
+.brand-lockup{display:flex;align-items:center;gap:11px}
+.brand-lockup img{width:62px;height:62px;object-fit:contain;flex:0 0 auto}
+.brand-lockup h2{margin:0;line-height:1.2}
+.page-heading{display:flex;align-items:center;gap:12px;min-width:0}
+.mobile-brand{width:54px;height:54px;flex:0 0 54px;display:flex;align-items:center;justify-content:center}
+.mobile-brand img{width:100%;height:100%;object-fit:contain}
+@media(max-width:760px){
+ aside{padding:10px 14px}
+ .brand-lockup{gap:9px}
+ .brand-lockup img{width:48px;height:48px}
+ .brand-lockup h2{font-size:16px}
+ .mobile-brand{width:44px;height:44px;flex-basis:44px}
+ header{align-items:center}
+}
+
+/* V10: official horizontal brand mark and circular app icon */
+.brand-lockup{gap:10px}
+.brand-lockup img{width:112px;height:64px;object-fit:contain}
+.brand-lockup h2{display:none}
+.mobile-brand{width:108px;height:58px;flex:0 0 108px}
+.mobile-brand img{width:100%;height:100%;object-fit:contain}
+@media(max-width:760px){
+ .brand-lockup img{width:96px;height:52px}
+ .brand-lockup h2{display:none}
+ .mobile-brand{width:104px;height:54px;flex-basis:104px}
+}

@@ -24,3 +24,7 @@ Fonctions de gestion des réservations : modifier les informations, changer de v
 Version V6 : Planning affiche automatiquement une vue Gantt de 15 jours avec navigation précédente/suivante. Disponibilités conserve une recherche par période et une liste de véhicules disponibles avec réservation directe.
 
 Version V8 : les réservations du planning sont affichées sous forme de cartes compactes avec client, dates et heures. Appuyer sur une carte ouvre le dossier de réservation pour modification.
+
+Version V9 : intégration du logo officiel Easy Drive dans l'en-tête latéral, l'en-tête principal sur mobile et comme favicon du site.
+
+Version V10 : logo horizontal officiel dans l'interface et logo circulaire en icône du site.
