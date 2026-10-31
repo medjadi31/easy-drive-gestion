@@ -19,3 +19,6 @@ Les données sont enregistrées dans le `localStorage` du navigateur de l'appare
 Fonctions de gestion des réservations : modifier les informations, changer de véhicule avec contrôle de disponibilité, supprimer après confirmation. Depuis Disponibilités, le bouton « Réserver » ouvre directement une nouvelle réservation avec le véhicule et la période préremplis.
 
 - Disponibilités sous forme de planning horizontal : voitures en lignes, dates en colonnes, réservations avec nom du client et heures, bouton Réserver pour les voitures libres sur toute la période.
+
+
+Version V6 : Planning affiche automatiquement une vue Gantt de 15 jours avec navigation précédente/suivante. Disponibilités conserve une recherche par période et une liste de véhicules disponibles avec réservation directe.
