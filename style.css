@@ -45,3 +45,72 @@ button.danger{background:#7b3030;color:#fff;border:1px solid #a64b4b}button.seco
  .planning-timeline .avail-day{min-width:76px}
  .planning-timeline .avail-booking{font-size:10px}
 }
+
+/* V7 fix: keep booking bars strictly inside the date grid */
+.planning-timeline .avail-header,
+.planning-timeline .avail-car-row{
+  display:grid;
+  grid-template-columns:118px 1140px !important;
+  width:max-content;
+  min-width:1258px;
+  box-sizing:border-box;
+}
+.planning-timeline .avail-car-head,
+.planning-timeline .avail-car-name{
+  width:118px !important;
+  min-width:118px;
+  box-sizing:border-box;
+}
+.planning-timeline .avail-days,
+.planning-timeline .avail-track{
+  width:1140px;
+  min-width:1140px;
+  display:grid;
+  grid-template-columns:repeat(15,76px) !important;
+  grid-auto-flow:row;
+  box-sizing:border-box;
+}
+.planning-timeline .avail-track{
+  position:relative;
+  grid-template-rows:68px;
+  align-items:center;
+  overflow:hidden;
+}
+.planning-timeline .avail-empty{
+  grid-row:1;
+  min-width:0;
+  height:68px;
+  box-sizing:border-box;
+}
+.planning-timeline .avail-booking{
+  grid-row:1;
+  align-self:center;
+  justify-self:stretch;
+  width:auto;
+  min-width:0;
+  max-width:100%;
+  height:auto;
+  min-height:44px;
+  max-height:58px;
+  margin:0 3px;
+  padding:6px 8px;
+  box-sizing:border-box;
+  white-space:normal;
+  overflow:hidden;
+  text-overflow:clip;
+  overflow-wrap:anywhere;
+  word-break:normal;
+  line-height:1.25;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:3;
+}
+.planning-timeline .avail-booking span{
+  display:block;
+  width:100%;
+  max-width:100%;
+  text-align:center;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
