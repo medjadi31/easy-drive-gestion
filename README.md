@@ -28,3 +28,5 @@ Version V8 : les réservations du planning sont affichées sous forme de cartes 
 Version V9 : intégration du logo officiel Easy Drive dans l'en-tête latéral, l'en-tête principal sur mobile et comme favicon du site.
 
 Version V10 : logo horizontal officiel dans l'interface et logo circulaire en icône du site.
+
+Version V11 : bouton Nouvelle réservation affiché uniquement sur le tableau de bord ; icône dédiée à chaque module ; logo repositionné avec identité complète EASY DRIVE · ORAN · ALGÉRIE.
