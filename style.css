@@ -114,3 +114,72 @@ button.danger{background:#7b3030;color:#fff;border:1px solid #a64b4b}button.seco
   white-space:normal;
   overflow-wrap:anywhere;
 }
+
+/* V8: reservation cards replace long text bars */
+.planning-timeline .avail-track{
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(15,76px) !important;
+  grid-template-rows:88px;
+  grid-auto-rows:88px;
+  align-items:stretch;
+  overflow:hidden;
+  min-height:88px;
+}
+.planning-timeline .avail-empty{
+  grid-row:1;
+  height:88px;
+  min-width:0;
+  box-sizing:border-box;
+}
+.planning-timeline .planning-booking-card{
+  grid-row:1;
+  align-self:center;
+  justify-self:stretch;
+  min-width:0;
+  width:calc(100% - 6px);
+  height:76px;
+  margin:0 3px;
+  padding:5px 4px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:8px;
+  background:#9f3029;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  box-sizing:border-box;
+  overflow:hidden;
+  white-space:normal;
+  text-align:center;
+  cursor:pointer;
+  box-shadow:0 2px 5px rgba(0,0,0,.22);
+}
+.planning-timeline .planning-booking-card.pending{background:#956b24;color:#fff}
+.planning-timeline .planning-booking-card b{
+  display:block;
+  width:100%;
+  max-width:100%;
+  font-size:11px;
+  line-height:1.15;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+  white-space:normal;
+}
+.planning-timeline .planning-booking-card small{
+  display:block;
+  width:100%;
+  font-size:9px;
+  line-height:1.15;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  color:#fff;
+}
+.planning-timeline .planning-booking-card:active{filter:brightness(1.15)}
+@media(max-width:760px){
+ .planning-timeline .planning-booking-card{height:76px;padding:4px 3px}
+ .planning-timeline .planning-booking-card b{font-size:10px}
+ .planning-timeline .planning-booking-card small{font-size:8px}
+}

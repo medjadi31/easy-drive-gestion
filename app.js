@@ -32,15 +32,17 @@ function planningTimeline(){
  let start=shiftDate(iso(new Date()),planningOffset*15),dates=Array.from({length:15},(_,i)=>shiftDate(start,i)),end=dates[14];
  let heads=dates.map(x=>{let d=new Date(x+'T12:00:00');return `<div class="avail-day"><b>${['dim.','lun.','mar.','mer.','jeu.','ven.','sam.'][d.getDay()]}</b><small>${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}</small></div>`}).join('');
  let rows=db.vehicles.map(v=>{
-  let bars=db.reservations.filter(r=>r.car===v.name&&r.status!=='Annulée'&&r.start<=end&&r.end>=start).map(r=>{
+  let bookings=db.reservations.filter(r=>r.car===v.name&&r.status!=='Annulée'&&r.start<=end&&r.end>=start).map(r=>{
    let first=dates.findIndex(x=>x===r.start),last=dates.findIndex(x=>x===r.end);
    if(first<0)first=r.start<start?0:14;if(last<0)last=r.end>end?14:0;if(last<first)return '';
-   let span=last-first+1,label=`${esc(r.client)} · ${r.startTime||'10:00'} → ${r.endTime||'10:00'}`;
-   return `<div class="avail-booking ${r.status==='En attente'?'pending':''}" style="grid-column:${first+1}/span ${span}" title="${esc(r.client)} · ${r.start} ${r.startTime||'10:00'} → ${r.end} ${r.endTime||'10:00'}"><span>${label}</span></div>`
+   let span=last-first+1;
+   let card=`<button type="button" class="planning-booking-card ${r.status==='En attente'?'pending':''}" style="grid-column:${first+1}/span ${span}" onclick="editReservation('${String(r.id).replace(/'/g,"&#39;")}')" title="Ouvrir le dossier de ${esc(r.client)}"><b>${esc(r.client||'Client')}</b><small>${r.start.slice(5).replace('-','/')} ${r.startTime||'10:00'}</small><small>→ ${r.end.slice(5).replace('-','/')} ${r.endTime||'10:00'}</small></button>`;
+   return card
   }).join('');
-  return `<div class="avail-car-row"><div class="avail-car-name"><b>${esc(v.name)}</b></div><div class="avail-track" style="grid-template-columns:repeat(15,minmax(76px,1fr))">${dates.map(()=>'<div class="avail-empty"></div>').join('')}${bars}</div></div>`
+  let empty=db.reservations.some(r=>r.car===v.name&&r.status!=='Annulée'&&r.start<=end&&r.end>=start);
+  return `<div class="avail-car-row"><div class="avail-car-name"><b>${esc(v.name)}</b></div><div class="avail-track planning-track" style="grid-template-columns:repeat(15,76px)">${dates.map(()=>'<div class="avail-empty"></div>').join('')}${bookings}</div></div>`
  }).join('');
- return `<div class="panel"><div class="planning-toolbar"><div><h3>Planning des réservations</h3><p class="muted">${start} → ${end} · 15 jours</p></div><div class="planning-arrows"><button class="secondary" onclick="movePlanning(-1)" aria-label="15 jours précédents">‹</button><button class="secondary" onclick="movePlanning(1)" aria-label="15 jours suivants">›</button></div></div><div class="availability-timeline planning-timeline"><div class="avail-header"><div class="avail-car-head">Véhicule</div><div class="avail-days" style="grid-template-columns:repeat(15,minmax(76px,1fr))">${heads}</div></div>${rows}</div><p class="avail-legend"><span class="legend-booked"></span> Réservation confirmée <span class="legend-pending"></span> En attente</p></div>`
+ return `<div class="panel"><div class="planning-toolbar"><div><h3>Planning des réservations</h3><p class="muted">${start} → ${end} · 15 jours</p></div><div class="planning-arrows"><button class="secondary" onclick="movePlanning(-1)" aria-label="15 jours précédents">‹</button><button class="secondary" onclick="movePlanning(1)" aria-label="15 jours suivants">›</button></div></div><div class="availability-timeline planning-timeline"><div class="avail-header"><div class="avail-car-head">Véhicule</div><div class="avail-days" style="grid-template-columns:repeat(15,76px)">${heads}</div></div>${rows}</div><p class="avail-legend"><span class="legend-booked"></span> Réservation confirmée <span class="legend-pending"></span> En attente</p><p class="muted">Appuyez sur une carte de réservation pour ouvrir et modifier le dossier.</p></div>`
 }
 function movePlanning(direction){planningOffset+=direction;render()}
 function planningTable(list){return table(['Client','Téléphone','Véhicule','Remise','Retour','Durée','Total','Statut'],list.map(r=>`<tr><td><b>${esc(r.client)}</b></td><td>${esc(r.phone||'—')}</td><td>${esc(r.car)}</td><td>${r.start} ${r.startTime||'10:00'}</td><td>${r.end} ${r.endTime||'10:00'}</td><td>${durationDays(r)} j</td><td>${money(r.total)}</td><td>${esc(r.status)}</td></tr>`).join(''))}

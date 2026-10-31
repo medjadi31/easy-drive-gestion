@@ -22,3 +22,5 @@ Fonctions de gestion des réservations : modifier les informations, changer de v
 
 
 Version V6 : Planning affiche automatiquement une vue Gantt de 15 jours avec navigation précédente/suivante. Disponibilités conserve une recherche par période et une liste de véhicules disponibles avec réservation directe.
+
+Version V8 : les réservations du planning sont affichées sous forme de cartes compactes avec client, dates et heures. Appuyer sur une carte ouvre le dossier de réservation pour modification.
