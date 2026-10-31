@@ -105,5 +105,38 @@ loginForm.addEventListener('submit',async e=>{
  if(error){loginMessage.textContent='Erreur : '+error.message;return}
  await loadCloud();
 });
-cloudClient.auth.getSession().then(({data})=>{if(data.session)loadCloud();else showLogin()});
+cloudClient.auth.getSession().then(({data})=>{if(data.session)loadCloud();else showLoginForm()});
 
+
+
+// Password recovery flow for Supabase Auth
+const recoveryForm=document.getElementById('recoveryForm');
+const recoveryMessage=document.getElementById('recoveryMessage');
+const forgotPasswordButton=document.getElementById('forgotPassword');
+function showRecovery(message='Choisissez un nouveau mot de passe.'){loginForm.hidden=true;recoveryForm.hidden=false;loginBox.hidden=false;recoveryMessage.textContent=message}
+function showLoginForm(message='Connectez-vous pour accéder aux données Easy Drive.'){recoveryForm.hidden=true;loginForm.hidden=false;showLogin(message)}
+forgotPasswordButton?.addEventListener('click',async()=>{
+ const email=document.getElementById('cloudEmail').value.trim();
+ if(!email){loginMessage.textContent='Saisissez votre adresse e-mail avant de demander un lien.';return}
+ forgotPasswordButton.disabled=true;loginMessage.textContent='Envoi du lien…';
+ const {error}=await cloudClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+ forgotPasswordButton.disabled=false;
+ loginMessage.textContent=error?'Erreur : '+error.message:'Lien envoyé. Consultez votre boîte e-mail et les courriers indésirables.';
+});
+recoveryForm?.addEventListener('submit',async e=>{
+ e.preventDefault();
+ const password=document.getElementById('newCloudPassword').value;
+ const confirmation=document.getElementById('confirmCloudPassword').value;
+ if(password.length<8){recoveryMessage.textContent='Le mot de passe doit contenir au moins 8 caractères.';return}
+ if(password!==confirmation){recoveryMessage.textContent='Les deux mots de passe ne correspondent pas.';return}
+ const submit=recoveryForm.querySelector('button[type=submit]');submit.disabled=true;submit.textContent='Enregistrement…';
+ const {error}=await cloudClient.auth.updateUser({password});
+ submit.disabled=false;submit.textContent='Enregistrer le mot de passe';
+ if(error){recoveryMessage.textContent='Erreur : '+error.message;return}
+ await cloudClient.auth.signOut();
+ document.getElementById('cloudPassword').value='';
+ showLoginForm('Mot de passe modifié. Connectez-vous avec votre nouveau mot de passe.');
+});
+cloudClient.auth.onAuthStateChange((event,session)=>{
+ if(event==='PASSWORD_RECOVERY')showRecovery();
+});

@@ -246,3 +246,5 @@ button.danger{background:#7b3030;color:#fff;border:1px solid #a64b4b}button.seco
 .cloud-login-card input{width:100%;padding:13px;border:1px solid #444;border-radius:9px;background:#101010;color:#fff;font:inherit}
 .cloud-login-card button{padding:13px;border:0;border-radius:9px;background:#c6a15b;color:#111;font-weight:800;font:inherit;cursor:pointer}
 .cloud-login-card button:disabled{opacity:.6}
+.cloud-login-card[hidden]{display:none!important}
+.cloud-login-card .link-button{background:transparent;color:#d6c08f;text-decoration:underline;padding:6px;font-size:14px;font-weight:500}

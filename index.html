@@ -6,7 +6,19 @@
   <label for="cloudEmail">Adresse e-mail</label><input id="cloudEmail" type="email" autocomplete="username" required>
   <label for="cloudPassword">Mot de passe</label><input id="cloudPassword" type="password" autocomplete="current-password" required>
   <button type="submit">Se connecter</button>
+  <button type="button" id="forgotPassword" class="link-button">Mot de passe oublié ?</button>
   <small id="cloudLoginMessage">Connexion sécurisée</small>
+ </form>
+ <form id="recoveryForm" class="cloud-login-card" hidden>
+  <img src="easy-drive-logo-horizontal.png" alt="Easy Drive">
+  <h1>Nouveau mot de passe</h1>
+  <p>Choisissez un nouveau mot de passe pour votre compte Easy Drive.</p>
+  <label for="newCloudPassword">Nouveau mot de passe</label>
+  <input id="newCloudPassword" type="password" autocomplete="new-password" minlength="8" required>
+  <label for="confirmCloudPassword">Confirmer le mot de passe</label>
+  <input id="confirmCloudPassword" type="password" autocomplete="new-password" minlength="8" required>
+  <button type="submit">Enregistrer le mot de passe</button>
+  <small id="recoveryMessage">Saisissez votre nouveau mot de passe.</small>
  </form>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script></body></html>
