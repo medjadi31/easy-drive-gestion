@@ -1,17 +1,19 @@
-# EASY DRIVE MANAGER – V12 Cloud
+# EASY DRIVE MANAGER — V12.2
 
-Version connectée à Supabase avec authentification par e-mail/mot de passe, stockage partagé dans `public.app_state` et synchronisation temps réel.
+Application de gestion de flotte Easy Drive (interface française, DA, thème noir et or).
+
+## Modifications V12.2
+- Correction de l'ouverture du formulaire de modification depuis Planning : recherche de réservation compatible avec les identifiants texte/nombre.
+- Le formulaire de réservation préremplit les données existantes et sélectionne le statut actuel (Confirmée, En attente, Annulée).
+- Enregistrement du statut et des modifications dans la base partagée Supabase.
+- Ajout des actions Modifier et Supprimer pour chaque dépense.
+- Résumé financier du mois en cours sur le tableau de bord.
+- Nouveau Bilan financier avec dates personnalisées, revenus des réservations confirmées, réservations en attente, dépenses, maintenance, total des sorties et solde net, avec tableaux détaillés.
 
 ## Déploiement
-1. Remplacer les fichiers du dépôt GitHub Pages par le contenu de ce dossier.
-2. Conserver les trois images du logo à la racine du site.
-3. Les utilisateurs se connectent avec les comptes créés dans Supabase Authentication > Users.
+Remplacer les fichiers de l'application dans le dépôt GitHub Pages par le contenu de ce dossier. Conserver les fichiers de logo et d'icône.
 
-## Sécurité
-- Le navigateur utilise uniquement la clé Supabase Publishable.
-- Ne jamais intégrer une clé `sb_secret_...` ou `service_role` dans le site.
-- La table `public.app_state` doit avoir RLS activé et les politiques pour `authenticated` créées par le script SQL d'installation.
-- Chaque compte authentifié dispose des mêmes droits de lecture et modification des données de flotte.
+## Important — calcul du bilan
+Les revenus sont calculés à partir du montant total des réservations confirmées dont la date de remise est dans la période choisie. Les réservations en attente et annulées ne sont pas incluses dans les recettes. Les coûts du module Maintenance sont ajoutés aux dépenses courantes pour calculer les sorties totales. Pour éviter un double comptage, ne pas saisir une même facture de maintenance à la fois dans Dépenses et dans Maintenance.
 
-## Données
-Au premier login, si le cloud est encore vide, les données locales présentes sur cet appareil sont transférées vers Supabase. Si le cloud contient déjà des données, celles du cloud deviennent la source partagée. Garder une copie de sauvegarde locale avant le premier déploiement.
+Les données sont sauvegardées dans localStorage et synchronisées via Supabase lorsque l'utilisateur est connecté.
