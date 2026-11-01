@@ -57,23 +57,34 @@ function movePlanning(direction){planningOffset+=direction;render()}
 function planningTable(list){return table(['Client','Téléphone','Véhicule','Remise','Retour','Durée','Total','Statut'],list.map(r=>`<tr><td><b>${esc(r.client)}</b></td><td>${esc(r.phone||'—')}</td><td>${esc(r.car)}</td><td>${r.start} ${r.startTime||'10:00'}</td><td>${r.end} ${r.endTime||'10:00'}</td><td>${durationDays(r)} j</td><td>${money(r.total)}</td><td>${esc(r.status)}</td></tr>`).join(''))}
 function filterPlanning(){let from=$('#planFrom').value,to=$('#planTo').value,box=$('#planningResults');if(!from||!to||to<from){box.innerHTML='<p class="warning">Veuillez choisir une période valide.</p>';return}let list=db.reservations.filter(r=>r.status!=='Annulée'&&r.start<=to&&r.end>=from).sort((a,b)=>dateTime(a.start,a.startTime)-dateTime(b.start,b.startTime));box.innerHTML=planningTable(list);$('#planningCount').textContent=list.length+' réservation(s) sur la période'}
 function form(title,html,fn){
- const dlg=$('#dlg'),dlgForm=dlg.querySelector('form'),saveBtn=$('#save');
+ const dlg=$('#dlg'),dlgForm=dlg.querySelector('form'),saveBtn=$('#save'),cancelBtn=dlg.querySelector('menu button.secondary');
  $('#mtitle').textContent=title;$('#fields').innerHTML=html;
- // Use the form submit event (rather than a click handler on a method=dialog button).
- // This is more reliable in mobile Chrome and prevents the dialog closing before data is read.
- saveBtn.type='submit';saveBtn.value='';
- dlgForm.onsubmit=e=>{e.preventDefault();e.stopPropagation();
-   const data=Object.fromEntries(new FormData(dlgForm).entries());
-   try { if(fn(data)!==false){save();dlg.close();render();} }
-   catch(err){console.error('Enregistrement impossible:',err);alert('Enregistrement impossible. Vérifiez les champs et réessayez.');}
+ // Avoid method=dialog implicit submission: Android Chrome can close the dialog before
+ // FormData is read. Use explicit buttons and a single guarded save path instead.
+ dlgForm.removeAttribute('method');saveBtn.type='button';saveBtn.value='';cancelBtn.type='button';
+ saveBtn.onclick=()=>{
+   if(saveBtn.disabled)return;
+   saveBtn.disabled=true;
+   try {
+     const data=Object.fromEntries(new FormData(dlgForm).entries());
+     const result=fn(data);
+     if(result===false){saveBtn.disabled=false;return;}
+     save();
+     if(dlg.open)dlg.close();else dlg.removeAttribute('open');
+     render();
+   } catch(err){
+     console.error('Enregistrement impossible:',err);
+     alert('Erreur lors de l’enregistrement : '+(err?.message||String(err)));
+   } finally {saveBtn.disabled=false;}
  };
+ cancelBtn.onclick=()=>{if(dlg.open)dlg.close();else dlg.removeAttribute('open');};
  if(!dlg.open){try{dlg.showModal()}catch(err){dlg.setAttribute('open','');}}
- const first=dlg.querySelector('#fields input, #fields select');if(first)setTimeout(()=>first.focus({preventScroll:true}),50);
+ // Do not autofocus an input on mobile; it can interfere with opening native select menus.
 }
 function f(l,n,t='text',v=''){return `<label>${l}</label><input name="${n}" type="${t}" value="${esc(v)}">`}
 function sel(l,n,a,v=''){return `<label>${l}</label><select name="${n}">${a.map(x=>`<option value="${esc(x)}" ${String(x)===String(v)?'selected':''}>${esc(x)}</option>`).join('')}</select>`}
 function vehicleForm(){form('Ajouter un véhicule',f('Marque et modèle','name')+f('Année','year','number',2026)+f('Immatriculation','plate')+f('Numéro VIN / châssis','vin')+f('Couleur','color')+sel('Carburant','fuel',['Essence','Diesel','Hybride','Électrique'])+sel('Transmission','transmission',['Automatique','Manuelle'])+f('Kilométrage actuel','km','number')+f('Tarif par 24 heures (DA)','rate','number'),x=>{if(!x.name)return false;db.vehicles.push({...x,id:Date.now(),status:'Disponible'})})}
-function reservationForm(prefill={},editId=null){let today=iso(new Date()),r=editId!==null?db.reservations.find(x=>String(x.id)===String(editId)):null;if(editId!==null&&!r){alert('Réservation introuvable. Actualisez les données puis réessayez.');return}let x={client:'',phone:'',car:db.vehicles[0]?.name||'',start:today,startTime:'10:00',end:today,endTime:'10:00',status:'Confirmée',currency:'DZD',paymentStatus:'En attente',...(r||{}),...(prefill||{})};x.dailyRate=x.dailyRate??db.vehicles.find(v=>v.name===x.car)?.rate??0;let opts=db.vehicles.map(v=>`<option value="${esc(v.name)}" ${v.name===x.car?'selected':''}>${esc(v.name)}</option>`).join('');form(editId!==null?'Modifier la réservation':'Nouvelle réservation',f('Client','client','text',x.client)+f('Téléphone','phone','tel',x.phone)+`<label>Véhicule</label><select name="car">${opts}</select>`+f('Date de remise','start','date',x.start)+f('Heure de remise','startTime','time',x.startTime)+f('Date de retour','end','date',x.end)+f('Heure de retour','endTime','time',x.endTime)+sel('Statut','status',['Confirmée','En attente','Annulée'],x.status)+f('Tarif journalier','dailyRate','number',x.dailyRate)+sel('Devise','currency',currencyOptions,x.currency),data=>{let v=db.vehicles.find(v=>v.name===data.car),a=dateTime(data.start,data.startTime),b=dateTime(data.end,data.endTime);if(!v||!data.client||!data.start||!data.end||b<=a){alert('Vérifiez les dates et heures : le retour doit être après la remise.');return false}if(data.status!=='Annulée'&&!isAvailable(data.car,a,b,editId)){alert('Ce véhicule est déjà réservé sur une partie de cette période.');return false}let days=Math.max(1,Math.ceil((b-a)/86400000)),record={...data,id:r?r.id:Date.now(),days,dailyRate:+data.dailyRate||0,total:days*(+data.dailyRate||0),contractRate:r?.contractRate||db.settings.eurRate||272,paymentStatus:r?.paymentStatus||'En attente',receivedAt:r?.receivedAt||''};if(r){let ix=db.reservations.findIndex(q=>String(q.id)===String(r.id));db.reservations[ix]=record}else db.reservations.push(record);if(!db.clients.some(c=>c.name===data.client))db.clients.push({name:data.client,phone:data.phone,email:''})})}
+function reservationForm(prefill={},editId=null){let today=iso(new Date()),r=editId!==null?db.reservations.find(x=>String(x.id)===String(editId)):null;if(editId!==null&&!r){alert('Réservation introuvable. Actualisez les données puis réessayez.');return}let x={client:'',phone:'',car:db.vehicles[0]?.name||'',start:today,startTime:'10:00',end:today,endTime:'10:00',status:'Confirmée',currency:'DZD',paymentStatus:'En attente',...(r||{}),...(prefill||{})};x.dailyRate=x.dailyRate??db.vehicles.find(v=>v.name===x.car)?.rate??0;let opts=db.vehicles.map(v=>`<option value="${esc(v.name)}" ${v.name===x.car?'selected':''}>${esc(v.name)}</option>`).join('');form(editId!==null?'Modifier la réservation':'Nouvelle réservation',f('Client','client','text',x.client)+f('Téléphone','phone','tel',x.phone)+`<label for="reservationCar">Véhicule</label><select id="reservationCar" name="car" autocomplete="off">${opts}</select>`+f('Date de remise','start','date',x.start)+f('Heure de remise','startTime','time',x.startTime)+f('Date de retour','end','date',x.end)+f('Heure de retour','endTime','time',x.endTime)+sel('Statut','status',['Confirmée','En attente','Annulée'],x.status)+f('Tarif journalier','dailyRate','number',x.dailyRate)+sel('Devise','currency',currencyOptions,x.currency),data=>{let v=db.vehicles.find(v=>v.name===data.car),a=dateTime(data.start,data.startTime),b=dateTime(data.end,data.endTime);if(!v||!data.client||!data.start||!data.end||b<=a){alert('Vérifiez les dates et heures : le retour doit être après la remise.');return false}if(data.status!=='Annulée'&&!isAvailable(data.car,a,b,editId)){alert('Ce véhicule est déjà réservé sur une partie de cette période.');return false}let days=Math.max(1,Math.ceil((b-a)/86400000)),record={...data,id:r?r.id:Date.now(),days,dailyRate:+data.dailyRate||0,total:days*(+data.dailyRate||0),contractRate:r?.contractRate||db.settings.eurRate||272,paymentStatus:r?.paymentStatus||'En attente',receivedAt:r?.receivedAt||''};if(r){let ix=db.reservations.findIndex(q=>String(q.id)===String(r.id));db.reservations[ix]=record}else db.reservations.push(record);if(!db.clients.some(c=>c.name===data.client))db.clients.push({name:data.client,phone:data.phone,email:''})})}
 
 function confirmReceipt(id){let r=db.reservations.find(x=>String(x.id)===String(id));if(!r)return;if(r.paymentStatus==='Encaissé'){alert('Cet encaissement est déjà confirmé.');return}if(!confirm(`Confirmer l’encaissement de ${money(r.total,r.currency)} pour ${r.client} ?`))return;r.paymentStatus='Encaissé';r.receivedAt=iso(new Date());save();render()}
 function editReservation(id){reservationForm({},id)}
