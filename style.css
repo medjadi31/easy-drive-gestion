@@ -248,18 +248,3 @@ button.danger{background:#7b3030;color:#fff;border:1px solid #a64b4b}button.seco
 .cloud-login-card button:disabled{opacity:.6}
 .cloud-login-card[hidden]{display:none!important}
 .cloud-login-card .link-button{background:transparent;color:#d6c08f;text-decoration:underline;padding:6px;font-size:14px;font-weight:500}
-/* Mobile dialog and native select reliability fixes */
-#dlg{max-height:92dvh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
-#dlg form{min-width:0;}
-#dlg #fields{padding-bottom:8px;}
-#dlg input,#dlg select{min-height:46px;position:relative;z-index:1;pointer-events:auto;touch-action:manipulation;font-size:16px;}
-#dlg select{-webkit-appearance:menulist;appearance:auto;}
-#dlg menu{position:sticky;bottom:0;background:#191b1f;padding:10px 0 0;z-index:2;}
-@media(max-width:760px){#dlg{width:calc(100vw - 24px);max-width:none;max-height:90dvh;margin:auto;padding:16px;}#dlg menu button{min-height:46px;font-size:15px;}}
-
-/* Android Chrome: keep native select controls interactive inside dialogs */
-#dlg { pointer-events:auto; touch-action:pan-y; }
-#dlg #fields { position:relative; z-index:2; }
-#dlg select { display:block; width:100%; min-height:48px; pointer-events:auto !important; touch-action:pan-y; -webkit-appearance:menulist; appearance:auto; }
-#dlg menu { position:relative; z-index:3; }
-#dlg button { touch-action:manipulation; }
