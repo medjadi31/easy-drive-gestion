@@ -263,3 +263,22 @@ button.danger{background:#7b3030;color:#fff;border:1px solid #a64b4b}button.seco
 .cycle-day.pending{background:#bd7a24;color:#17120a;cursor:pointer}
 .cycle-day.available{opacity:1}
 @media(max-width:760px){.cycle-head,.cycle-car-row{grid-template-columns:100px minmax(850px,1fr)}.cycle-car-name{font-size:10px;padding:7px}.cycle-day{height:28px}}
+
+
+/* V13.6.5 — Dashboard compact, LTR, cycle selector and net result colors */
+html,body{direction:ltr;text-align:left}
+#app{direction:ltr;text-align:left}
+.dashboard-head{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap}
+.dashboard-head h2{margin:7px 0 0;color:#e1c27e;font-size:25px}
+.dashboard-cycle{width:min(100%,390px)}
+.dashboard-cycle label{display:block;color:#c9a45c;font-weight:bold}
+.dashboard-cycle select{margin-bottom:5px}
+.dashboard-finance{grid-template-columns:repeat(4,minmax(0,1fr))}
+.dashboard-fleet{grid-template-columns:repeat(3,minmax(0,1fr))}
+.dashboard-net{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;border-top:1px solid #30343a;padding-top:14px;margin-top:8px}
+.dashboard-net>div{background:#121416;border:1px solid #30343a;border-radius:8px;padding:12px}
+.dashboard-net small,.dashboard-net strong{display:block}
+.dashboard-net small{color:#aaa;font-size:11px;margin-bottom:7px}
+.dashboard-net strong{font-size:20px}
+.net-positive{color:#55c878}.net-negative{color:#ef6666}.net-zero{color:#aaa}
+@media(max-width:760px){.dashboard-head{align-items:stretch}.dashboard-cycle{width:100%}.dashboard-finance{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-fleet{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-net{grid-template-columns:1fr 1fr}}
