@@ -1,4 +1,4 @@
-const $=s=>document.querySelector(s),iso=d=>new Date(d).toISOString().slice(0,10),money=(n,c='DZD')=>(+n||0).toLocaleString('fr-FR',{maximumFractionDigits:2})+(c==='EUR'?' €':' DA'),currencyOptions=['DZD','EUR'],esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=s=>document.querySelector(s),iso=d=>{const x=d instanceof Date?d:new Date(d);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`},money=(n,c='DZD')=>(+n||0).toLocaleString('fr-FR',{maximumFractionDigits:2})+(c==='EUR'?' €':' DA'),currencyOptions=['DZD','EUR'],esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const SUPABASE_URL='https://aplxwowroaajuytxdahi.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_14NcAkmAHgfGx42i-kuZBw_shLoGKJl';
 const cloudClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
