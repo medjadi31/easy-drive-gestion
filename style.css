@@ -248,3 +248,18 @@ button.danger{background:#7b3030;color:#fff;border:1px solid #a64b4b}button.seco
 .cloud-login-card button:disabled{opacity:.6}
 .cloud-login-card[hidden]{display:none!important}
 .cloud-login-card .link-button{background:transparent;color:#d6c08f;text-decoration:underline;padding:6px;font-size:14px;font-weight:500}
+
+/* V13.6 - EASY DRIVE monthly cycle 29 to 28 */
+.cycle-calendar{overflow-x:auto;border:1px solid #34363b;border-radius:12px}
+.cycle-head,.cycle-car-row{display:grid;grid-template-columns:145px minmax(850px,1fr);min-width:1000px;align-items:stretch}
+.cycle-head{background:#22252a;color:#d8c28f;font-weight:800}
+.cycle-head-car,.cycle-car-name{padding:10px;display:flex;align-items:center;border-right:1px solid #383a40}
+.cycle-days{display:grid;gap:2px;padding:5px;min-width:0}
+.cycle-head .avail-day{text-align:center;min-width:0;font-size:10px;padding:4px 0}
+.cycle-car-row{border-top:1px solid #35373c;min-height:42px}
+.cycle-car-name{font-size:12px;color:#eee}
+.cycle-day{min-width:0;height:31px;border:0;border-radius:4px;background:#235b3a;color:#d8ffe3;font-weight:800;padding:0}
+.cycle-day.booked{background:#8b3035;color:#fff;cursor:pointer}
+.cycle-day.pending{background:#bd7a24;color:#17120a;cursor:pointer}
+.cycle-day.available{opacity:1}
+@media(max-width:760px){.cycle-head,.cycle-car-row{grid-template-columns:100px minmax(850px,1fr)}.cycle-car-name{font-size:10px;padding:7px}.cycle-day{height:28px}}
